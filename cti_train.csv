@@ -1,0 +1,14 @@
+text,label
+"Androxgh0st malware establishes a botnet to exploit exposed web applications and harvest cloud service credentials using SMTP abuse and web shells.",Critical Infrastructure
+"Threat actors exploited Laravel .env files to steal AWS and Microsoft Office 365 credentials and deploy persistent web shells.",Critical Infrastructure
+"Ransomware operators targeted hospital networks by exploiting VPN vulnerabilities and encrypting patient medical records.",Healthcare
+"Healthcare organizations experienced phishing campaigns delivering malware to disrupt clinical operations.",Healthcare
+"Advanced persistent threat actors conducted cyber espionage campaigns against government agencies using spearphishing emails.",Government
+"State-sponsored hackers targeted public sector organizations for long-term intelligence collection.",Government
+"Banking trojans stole customer credentials and credit card information through malicious phishing websites.",Finance
+"Financial institutions were targeted by credential harvesting malware impacting online banking systems.",Finance
+"Supply chain attacks compromised software updates distributed to technology companies.",Technology
+"Backdoor implants were discovered in enterprise software affecting multiple technology vendors.",Technology
+"Industrial control system malware disrupted power grid monitoring and control operations.",Critical Infrastructure
+"Cyber attacks impacted water treatment facilities by exploiting exposed operational technology systems.",Critical Infrastructure
+"Cyber incidents affected multiple sectors without a clearly defined primary industry focus.",Others

@@ -1,0 +1,38 @@
+=== CTI REPORT ===
+Overview
+The Cybersecurity and Infrastructure Security Agency (CISA) is releasing this advisory in response to
+ransomware actors leveraging unpatched instances of a vulnerability in SimpleHelp Remote Monitoring
+and Management (RMM) to compromise customers of a utility billing software provider. This incident
+reflects a broader pattern of ransomware actors targeting organizations through unpatched versions of
+SimpleHelp RMM since January 2025.
+SimpleHelp versions 5.5.7 and earlier contain several vulnerabilities, including CVE-2024-57727, a path
+traversal vulnerability. Ransomware actors likely leveraged CVE-2024-57727 to access downstream
+customers’ unpatched SimpleHelp RMM for disruption of services in double extortion compromises.
+CISA added CVE-2024-57727 to its Known Exploited Vulnerabilities (KEV) Catalog on Feb. 13, 2025.
+CISA urges software vendors, downstream customers, and end users to immediately implement the
+mitigations listed in this advisory based on confirmed compromise or risk of compromise.
+
+=== CTI REPORT ===
+Overview
+The Cybersecurity and Infrastructure Security Agency (CISA) is releasing this advisory in response to
+ransomware actors leveraging unpatched instances of a vulnerability in SimpleHelp Remote Monitoring
+and Management (RMM) to compromise customers of a utility billing software provider. This incident
+reflects a broader pattern of ransomware actors targeting organizations through unpatched versions of
+SimpleHelp RMM since January 2025.
+SimpleHelp versions 5.5.7 and earlier contain several vulnerabilities, including CVE-2024-57727, a path
+traversal vulnerability. Ransomware actors likely leveraged CVE-2024-57727 to access downstream
+customers’ unpatched SimpleHelp RMM for disruption of services in double extortion compromises.
+CISA added CVE-2024-57727 to its Known Exploited Vulnerabilities (KEV) Catalog on Feb. 13, 2025.
+CISA urges software vendors, downstream customers, and end users to immediately implement the
+mitigations listed in this advisory based on confirmed compromise or risk of compromise.
+
+=== CTI REPORT ===
+Overview
+The Federal Bureau of Investigation (FBI) and the Cybersecurity and Infrastructure Security Agency (CISA)
+are releasing this joint Cybersecurity Advisory (CSA) to disseminate known indicators of compromise
+(IOCs) and tactics, techniques, and procedures (TTPs) associated with threat actors deploying
+Androxgh0st malware. The malware establishes a botnet capable of identifying and compromising
+vulnerable networks. Organizations are encouraged to implement mitigations to reduce the impact of
+Androxgh0st infections.
+
+
