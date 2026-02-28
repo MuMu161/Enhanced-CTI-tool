@@ -27,7 +27,7 @@ class IndustryClassifier:
         self.label_map = torch.load(label_path, map_location=self.device)
         self.model.eval()
 
-    def predict(self, text, threshold=0.4):
+    def predict(self, text, threshold=0.40):
 
         if self.model is None:
             return [], {}
