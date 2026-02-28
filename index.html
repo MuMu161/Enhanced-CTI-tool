@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnhanceCTI — Cyber Threat Intelligence Platform</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-void:       #030810;
+            --bg-deep:       #060f1e;
+            --bg-surface:    #0a1628;
+            --bg-card:       #0d1f3c;
+            --bg-elevated:   #152a4a;
+            --cyan:          #00e5ff;
+            --cyan-dim:      #00b4c8;
+            --cyan-ghost:    rgba(0,229,255,0.08);
+            --blue:          #1565c0;
+            --blue-bright:   #1e88e5;
+            --teal:          #00acc1;
+            --green:         #00e676;
+            --green-dim:     #00c853;
+            --red:           #ff1744;
+            --red-dim:       #d50000;
+            --orange:        #ff6d00;
+            --text-primary:  #e8f4ff;
+            --text-secondary:#8bacc8;
+            --text-muted:    #4a6580;
+            --border:        rgba(0,229,255,0.12);
+            --border-bright: rgba(0,229,255,0.35);
+            --glow-cyan:     0 0 20px rgba(0,229,255,0.25);
+            --glow-green:    0 0 20px rgba(0,230,118,0.25);
+            --glow-red:      0 0 20px rgba(255,23,68,0.25);
+            --font-mono:     'Share Tech Mono', monospace;
+            --font-display:  'Rajdhani', sans-serif;
+            --font-body:     'Exo 2', sans-serif;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg, transparent, transparent 2px,
+                rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+            );
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .corner {
+            position: fixed;
+            width: 60px; height: 60px;
+            border-color: var(--cyan-dim);
+            border-style: solid;
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .corner-tl { top:16px; left:16px;    border-width: 2px 0 0 2px; }
+        .corner-tr { top:16px; right:16px;   border-width: 2px 2px 0 0; }
+        .corner-bl { bottom:16px; left:16px; border-width: 0 0 2px 2px; }
+        .corner-br { bottom:16px; right:16px;border-width: 0 2px 2px 0; }
+
+        .main-wrapper {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px 60px;
+        }
+
+        /* ── Header ──────────────────────────────────────── */
+        .site-header { padding: 36px 0 28px; text-align: center; }
+
+        .header-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--cyan);
+            background: var(--cyan-ghost);
+            border: 1px solid var(--border-bright);
+            padding: 4px 16px;
+            border-radius: 2px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            animation: pulse-border 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse-border {
+            0%, 100% { border-color: rgba(0,229,255,0.35); }
+            50%       { border-color: rgba(0,229,255,0.7); box-shadow: 0 0 12px rgba(0,229,255,0.2); }
+        }
+
+        .site-title {
+            font-family: var(--font-display);
+            font-size: 62px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        @media (max-width: 600px) { .site-title { font-size: 36px; } }
+        .site-title span { color: var(--cyan); text-shadow: var(--glow-cyan); }
+
+        .site-subtitle {
+            margin-top: 10px;
+            font-family: var(--font-mono);
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+        }
+
+        .header-divider {
+            display: flex; align-items: center; gap: 12px; margin-top: 24px;
+        }
+        .header-divider::before, .header-divider::after {
+            content: ''; flex: 1; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
+        }
+        .header-divider span {
+            font-family: var(--font-mono); font-size: 10px;
+            color: var(--cyan-dim); letter-spacing: 4px;
+        }
+
+        /* ── Status bar ───────────────────────────────────── */
+        .status-bar {
+            display: flex; gap: 24px; justify-content: center;
+            flex-wrap: wrap; margin-bottom: 32px;
+        }
+        .status-item {
+            display: flex; align-items: center; gap: 8px;
+            font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--green); box-shadow: var(--glow-green);
+            animation: blink 2s ease-in-out infinite;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* ── Upload panel ─────────────────────────────────── */
+        .upload-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 32px;
+            margin-bottom: 36px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .upload-panel::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+        }
+        .upload-panel:hover { border-color: var(--border-bright); }
+
+        .panel-label {
+            font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px;
+            color: var(--cyan); text-transform: uppercase;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .panel-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+        .drop-zone {
+            border: 2px dashed var(--border-bright);
+            border-radius: 4px; padding: 40px 24px; text-align: center;
+            cursor: pointer; transition: all 0.3s;
+            background: var(--bg-deep); position: relative;
+        }
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--cyan);
+            background: var(--cyan-ghost);
+            box-shadow: var(--glow-cyan);
+        }
+        .drop-zone input[type="file"] {
+            position: absolute; inset: 0; opacity: 0;
+            cursor: pointer; width: 100%; height: 100%;
+        }
+        .drop-icon {
+            font-size: 36px; color: var(--cyan-dim);
+            margin-bottom: 12px; transition: transform 0.3s;
+        }
+        .drop-zone:hover .drop-icon { transform: translateY(-4px); }
+        .drop-title {
+            font-family: var(--font-display); font-size: 18px;
+            font-weight: 600; color: var(--text-primary);
+            margin-bottom: 6px; letter-spacing: 1px;
+        }
+        .drop-sub {
+            font-family: var(--font-mono); font-size: 11px;
+            color: var(--text-muted); letter-spacing: 1px;
+        }
+
+        .file-list { margin-top: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .file-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 8px 14px; background: var(--bg-elevated);
+            border: 1px solid var(--border); border-radius: 3px;
+            font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary);
+        }
+        .file-item i { color: var(--cyan); }
+        .file-size { margin-left: auto; color: var(--text-muted); font-size: 10px; }
+
+        .btn-analyze {
+            margin-top: 20px; width: 100%; padding: 14px;
+            background: linear-gradient(135deg, var(--blue) 0%, #0d47a1 100%);
+            border: 1px solid var(--blue-bright); border-radius: 3px;
+            color: var(--text-primary); font-family: var(--font-display);
+            font-size: 16px; font-weight: 700; letter-spacing: 4px;
+            text-transform: uppercase; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-analyze:hover {
+            box-shadow: 0 0 24px rgba(21,101,192,0.5), var(--glow-cyan);
+            border-color: var(--cyan); transform: translateY(-1px);
+        }
+        .btn-analyze:active { transform: translateY(0); }
+
+        /* ── Results ──────────────────────────────────────── */
+        .results-header {
+            display: flex; align-items: center;
+            gap: 16px; margin-bottom: 24px;
+        }
+        .results-title {
+            font-family: var(--font-display); font-size: 22px;
+            font-weight: 700; letter-spacing: 3px;
+            color: var(--text-primary); text-transform: uppercase;
+        }
+        .results-count {
+            font-family: var(--font-mono); font-size: 12px; color: var(--cyan);
+            background: var(--cyan-ghost); border: 1px solid var(--border-bright);
+            padding: 3px 12px; border-radius: 2px;
+        }
+
+        /* ── Result card ──────────────────────────────────── */
+        .result-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: 4px; margin-bottom: 24px; overflow: hidden;
+            animation: slide-up 0.4s ease both;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .result-card:hover {
+            border-color: var(--border-bright);
+            box-shadow: 0 4px 32px rgba(0,0,0,0.4);
+        }
+        .result-card:nth-child(2) { animation-delay: 0.05s; }
+        .result-card:nth-child(3) { animation-delay: 0.10s; }
+        .result-card:nth-child(4) { animation-delay: 0.15s; }
+
+        .card-accent { height: 3px; width: 100%; }
+        .card-accent.new     { background: linear-gradient(90deg, var(--green), var(--teal)); }
+        .card-accent.merged  { background: linear-gradient(90deg, var(--blue-bright), var(--cyan)); }
+        .card-accent.dropped { background: linear-gradient(90deg, var(--red), var(--orange)); }
+        .card-accent.error   { background: var(--bg-elevated); }
+
+        .card-header-row {
+            display: flex; align-items: flex-start;
+            justify-content: space-between; flex-wrap: wrap;
+            gap: 12px; padding: 20px 24px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-filename { display: flex; align-items: center; gap: 10px; }
+        .card-filename i { color: var(--cyan-dim); font-size: 16px; }
+        .card-filename-text {
+            font-family: var(--font-mono); font-size: 14px; color: var(--text-primary);
+        }
+
+        .decision-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 16px; border-radius: 2px;
+            font-family: var(--font-display); font-size: 13px;
+            font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+        }
+        .decision-badge.new {
+            background: rgba(0,230,118,0.1); border: 1px solid var(--green-dim);
+            color: var(--green); box-shadow: var(--glow-green);
+        }
+        .decision-badge.merged {
+            background: rgba(30,136,229,0.1); border: 1px solid var(--blue-bright);
+            color: var(--cyan); box-shadow: var(--glow-cyan);
+        }
+        .decision-badge.dropped {
+            background: rgba(255,23,68,0.1); border: 1px solid var(--red-dim);
+            color: var(--red); box-shadow: var(--glow-red);
+        }
+
+        .card-body {
+            padding: 20px 24px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        @media (max-width: 680px) { .card-body { grid-template-columns: 1fr; } }
+
+        .metric-block {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            border-radius: 3px; padding: 16px;
+        }
+        .metric-label {
+            font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px;
+            color: var(--text-muted); text-transform: uppercase;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+        }
+        .metric-label i { color: var(--cyan-dim); }
+
+        .sim-score-wrap { display: flex; align-items: center; gap: 14px; }
+        .sim-score-number {
+            font-family: var(--font-mono); font-size: 32px;
+            color: var(--cyan); text-shadow: var(--glow-cyan); line-height: 1;
+        }
+        .sim-bar-wrap { flex: 1; }
+        .sim-bar-track {
+            height: 6px; background: var(--bg-elevated);
+            border-radius: 3px; overflow: hidden; margin-bottom: 4px;
+        }
+        .sim-bar-fill {
+            height: 100%; border-radius: 3px;
+            background: linear-gradient(90deg, var(--teal), var(--cyan));
+            width: 0; transition: width 1s ease;
+        }
+        .sim-bar-label {
+            font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);
+        }
+
+        .dup-flag {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px; border-radius: 3px;
+            font-family: var(--font-mono); font-size: 12px; margin-top: 4px;
+        }
+        .dup-flag.yes {
+            background: rgba(255,23,68,0.08);
+            border: 1px solid rgba(255,23,68,0.3); color: var(--red);
+        }
+        .dup-flag.no {
+            background: rgba(0,230,118,0.06);
+            border: 1px solid rgba(0,230,118,0.2); color: var(--green-dim);
+        }
+        .reason-text {
+            margin-top: 10px; font-family: var(--font-mono);
+            font-size: 11px; color: var(--text-muted);
+        }
+
+        .industry-list { display: flex; flex-direction: column; gap: 10px; }
+        .industry-row { display: flex; align-items: center; gap: 10px; }
+        .industry-tag {
+            font-family: var(--font-mono); font-size: 11px;
+            padding: 3px 10px; background: rgba(0,172,193,0.1);
+            border: 1px solid rgba(0,172,193,0.3);
+            border-radius: 2px; color: var(--teal); white-space: nowrap;
+        }
+        .confidence-track {
+            flex: 1; height: 4px; background: var(--bg-elevated);
+            border-radius: 2px; overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%; border-radius: 2px;
+            background: linear-gradient(90deg, var(--blue-bright), var(--cyan));
+            width: 0; transition: width 1s ease;
+        }
+        .confidence-pct {
+            font-family: var(--font-mono); font-size: 11px;
+            color: var(--text-secondary); min-width: 40px; text-align: right;
+        }
+        .keyword-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .keyword-chip {
+            font-family: var(--font-mono); font-size: 10px;
+            padding: 2px 8px; background: var(--bg-elevated);
+            border: 1px solid var(--border); border-radius: 2px; color: var(--text-muted);
+        }
+        .no-industries {
+            font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); padding: 8px 0;
+        }
+
+        .error-notice {
+            display: flex; align-items: center; gap: 12px;
+            padding: 16px; background: rgba(255,23,68,0.06);
+            border: 1px solid rgba(255,23,68,0.25); border-radius: 3px;
+            font-family: var(--font-mono); font-size: 12px;
+            color: #ff6b6b; margin: 16px 24px;
+        }
+
+        .card-footer-row {
+            padding: 10px 24px; border-top: 1px solid var(--border);
+            display: flex; align-items: center;
+            justify-content: space-between; flex-wrap: wrap;
+            gap: 8px; background: var(--bg-surface);
+        }
+        .footer-tag {
+            font-family: var(--font-mono); font-size: 10px;
+            color: var(--text-muted); letter-spacing: 1px;
+        }
+        .footer-tag span { color: var(--cyan-dim); }
+
+        /* ── Empty / alert ────────────────────────────────── */
+        .empty-state { text-align: center; padding: 60px 24px; color: var(--text-muted); }
+        .empty-state i {
+            font-size: 48px; color: var(--border-bright);
+            margin-bottom: 16px; display: block;
+        }
+        .empty-state p {
+            font-family: var(--font-mono); font-size: 13px; letter-spacing: 1px;
+        }
+
+        .alert-box {
+            background: rgba(255,23,68,0.08); border: 1px solid rgba(255,23,68,0.4);
+            border-radius: 3px; padding: 14px 20px; margin-bottom: 24px;
+            font-family: var(--font-mono); font-size: 13px; color: #ff6b6b;
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        /* ── Loading ──────────────────────────────────────── */
+        .loading-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(3,8,16,0.88); z-index: 9000;
+            align-items: center; justify-content: center;
+            flex-direction: column; gap: 20px;
+        }
+        .loading-overlay.active { display: flex; }
+        .loading-spinner {
+            width: 60px; height: 60px;
+            border: 3px solid var(--border);
+            border-top-color: var(--cyan);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text {
+            font-family: var(--font-mono); font-size: 14px;
+            color: var(--cyan); letter-spacing: 3px;
+            animation: fade-text 1.5s ease-in-out infinite;
+        }
+        @keyframes fade-text { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        /* ── Footer ───────────────────────────────────────── */
+        .site-footer {
+            text-align: center; padding: 32px 0 0;
+            font-family: var(--font-mono); font-size: 10px;
+            color: var(--text-muted); letter-spacing: 2px;
+            border-top: 1px solid var(--border);
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-void); }
+        ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--cyan-dim); }
+    </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="corner corner-tl"></div>
+<div class="corner corner-tr"></div>
+<div class="corner corner-bl"></div>
+<div class="corner corner-br"></div>
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">ANALYZING THREAT INTELLIGENCE...</div>
+</div>
+
+<div class="main-wrapper">
+
+    <header class="site-header">
+        <div class="header-badge">
+            <i class="fas fa-shield-halved" style="margin-right:6px;"></i>
+            CLASSIFIED SYSTEM // AUTHORIZED ACCESS ONLY
+        </div>
+        <div class="site-title">Enhance<span>CTI</span></div>
+        <div class="site-subtitle">CYBER THREAT INTELLIGENCE ANALYSIS PLATFORM</div>
+        <div class="header-divider"><span>◆ SYSTEM ONLINE ◆</span></div>
+    </header>
+
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-dot"></div>DISTILBERT CLASSIFIER ACTIVE
+        </div>
+        <div class="status-item">
+            <div class="status-dot" style="animation-delay:0.7s"></div>SENTENCEBERT SIRD ONLINE
+        </div>
+        <div class="status-item">
+            <div class="status-dot" style="animation-delay:1.4s"></div>IICM MERGE ENGINE READY
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="alert-box">
+        <i class="fas fa-triangle-exclamation"></i>{{ error }}
+    </div>
+    {% endif %}
+
+    <div class="upload-panel">
+        <div class="panel-label">
+            <i class="fas fa-upload"></i>INTELLIGENCE SUBMISSION
+        </div>
+        <form method="POST" enctype="multipart/form-data" id="uploadForm">
+            <div class="drop-zone" id="dropZone">
+                <input type="file" name="file" id="fileInput" accept=".pdf" multiple required>
+                <div class="drop-icon"><i class="fas fa-file-shield"></i></div>
+                <div class="drop-title">Drop PDF Reports Here</div>
+                <div class="drop-sub">OR CLICK TO SELECT &nbsp;·&nbsp; MAX 6 PDFs</div>
+            </div>
+            <div class="file-list" id="fileList"></div>
+            <button type="submit" class="btn-analyze">
+                <i class="fas fa-magnifying-glass" style="margin-right:10px;"></i>
+                ANALYZE INTELLIGENCE
+            </button>
+        </form>
+    </div>
+
+    {% if results %}
+    <div class="results-header">
+        <div class="results-title">
+            <i class="fas fa-chart-bar" style="color:var(--cyan);margin-right:10px;font-size:20px;"></i>
+            Analysis Results
+        </div>
+        <div class="results-count">
+            {{ results|length }} REPORT{% if results|length != 1 %}S{% endif %} PROCESSED
+        </div>
+    </div>
+
+    {% for result in results %}
+
+    {% if result.error %}{% set dec = 'error' %}
+    {% elif result.decision == 'MERGED' %}{% set dec = 'merged' %}
+    {% elif result.decision == 'DROPPED' %}{% set dec = 'dropped' %}
+    {% else %}{% set dec = 'new' %}{% endif %}
+
+    <div class="result-card"
+     data-sim="{{ result.similarity_score if not result.error else 0 }}"
+     data-scores="{% if not result.error and result.classification_scores %}{{ result.classification_scores | tojson }}{% else %}{}{% endif %}">
+    
+    <div class="card-accent {{ dec }}"></div>
+
+        <div class="card-header-row">
+            <div class="card-filename">
+                <i class="fas fa-file-pdf"></i>
+                <span class="card-filename-text">{{ result.filename }}</span>
+            </div>
+            {% if not result.error %}
+            <div class="decision-badge {{ dec }}">
+                {% if dec == 'new' %}<i class="fas fa-circle-plus"></i> NEW CTI
+                {% elif dec == 'merged' %}<i class="fas fa-code-merge"></i> MERGED
+                {% elif dec == 'dropped' %}<i class="fas fa-ban"></i> DROPPED
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        {% if result.error %}
+        <div class="error-notice">
+            <i class="fas fa-triangle-exclamation"></i>{{ result.error }}
+        </div>
+
+        {% else %}
+        <div class="card-body">
+
+            <div>
+                <div class="metric-block" style="margin-bottom:14px;">
+                    <div class="metric-label">
+                        <i class="fas fa-wave-square"></i>SENTENCEBERT SIMILARITY (SIRD)
+                    </div>
+                    <div class="sim-score-wrap">
+                        <div class="sim-score-number">{{ "%.3f" | format(result.similarity_score) }}</div>
+                        <div class="sim-bar-wrap">
+                            <div class="sim-bar-track">
+                                <div class="sim-bar-fill"
+                                     data-pct="{{ (result.similarity_score * 100) | round | int }}">
+                                </div>
+                            </div>
+                            <div class="sim-bar-label">
+                                {% if result.similarity_score >= 0.80 %}
+                                    ABOVE THRESHOLD (>=0.80) — MERGE CHECK TRIGGERED
+                                {% elif result.similarity_score > 0 %}
+                                    BELOW THRESHOLD — STORED AS NEW CTI
+                                {% else %}
+                                    NO PRIOR MATCH IN DATABASE
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="metric-block">
+                    <div class="metric-label">
+                        <i class="fas fa-fingerprint"></i>IICM DUPLICATE DETECTION
+                    </div>
+                    {% if result.duplicate_detected %}
+<div class="dup-flag yes">
+    <i class="fas fa-circle-exclamation"></i>
+    DUPLICATE DETECTED — IICM ACTIVATED
+</div>
+{% else %}
+<div class="dup-flag no">
+    <i class="fas fa-circle-check"></i>
+    UNIQUE INTELLIGENCE — NO PRIOR MATCH
+</div>
+{% endif %}
+                    {% if result.decision == 'DROPPED' and result.reason %}
+                    <div class="reason-text">
+                        <i class="fas fa-info-circle" style="color:var(--orange);margin-right:6px;"></i>
+                        {{ result.reason }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="metric-block">
+                <div class="metric-label">
+                    <i class="fas fa-sitemap"></i>INDUSTRY CLASSIFICATION (DISTILBERT)
+                </div>
+                {% if result.industries %}
+                <div class="industry-list">
+                    {% for industry in result.industries %}
+                    <div>
+                        <div class="industry-row">
+                            <div class="industry-tag">{{ industry }}</div>
+                            <div class="confidence-track">
+                                <div class="confidence-fill"
+                                     data-pct="{{ (result.classification_scores[industry] * 100) | round | int }}">
+                                </div>
+                            </div>
+                            <div class="confidence-pct">
+                                {{ "%.1f" | format(result.classification_scores[industry] * 100) }}%
+                            </div>
+                        </div>
+                        {% if result.explanations and result.explanations[industry] %}
+                        <div class="keyword-chips">
+                            {% for kw in result.explanations[industry] %}
+                            <span class="keyword-chip">{{ kw }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-industries">
+                    <i class="fas fa-ban" style="color:var(--red-dim);margin-right:8px;"></i>
+                    No relevant industry detected — CTI dropped
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="card-footer-row">
+            <div class="footer-tag">ENGINE: <span>DISTILBERT + SENTENCEBERT + RANDOM FOREST</span></div>
+            <div class="footer-tag">SIRD THRESHOLD: <span>0.80</span> &nbsp;|&nbsp; CLASSIFIER: <span>p > 0.40</span></div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-shield-halved"></i>
+        <p>AWAITING INTELLIGENCE SUBMISSION</p>
+    </div>
+    {% endif %}
+
+    <footer class="site-footer">
+        ENHANCECTI &nbsp;·&nbsp; COMPUTERS &amp; SECURITY VOL.158 2025 &nbsp;·&nbsp; NTUT INFORMATION SECURITY LAB
+    </footer>
+</div>
+
+<script>
+    // File select
+    const fileInput = document.getElementById('fileInput');
+    const fileList  = document.getElementById('fileList');
+
+    fileInput.addEventListener('change', function() { renderFiles(this.files); });
+
+    function renderFiles(files) {
+        const arr = Array.from(files);
+        if (arr.length > 6) {
+            alert('Maximum 6 files allowed.');
+            fileInput.value = '';
+            fileList.innerHTML = '';
+            return;
+        }
+        fileList.innerHTML = arr.map(function(f) {
+            return '<div class="file-item">' +
+                '<i class="fas fa-file-pdf"></i>' +
+                '<span>' + f.name + '</span>' +
+                '<span class="file-size">' + (f.size/1024).toFixed(1) + ' KB</span>' +
+                '</div>';
+        }).join('');
+    }
+
+    // Drag and drop
+    var dz = document.getElementById('dropZone');
+    dz.addEventListener('dragover', function(e) {
+        e.preventDefault(); dz.classList.add('dragover');
+    });
+    dz.addEventListener('dragleave', function() { dz.classList.remove('dragover'); });
+    dz.addEventListener('drop', function(e) {
+        e.preventDefault(); dz.classList.remove('dragover');
+        fileInput.files = e.dataTransfer.files;
+        renderFiles(fileInput.files);
+    });
+
+    // Loading overlay
+    document.getElementById('uploadForm').addEventListener('submit', function() {
+        if (fileInput.files && fileInput.files.length > 0) {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+    });
+
+    // Animate bars — reads data-pct attribute, sets CSS width via JS
+    // This is the KEY FIX: no Jinja2 double braces inside style attribute
+    window.addEventListener('load', function() {
+        var bars = document.querySelectorAll('[data-pct]');
+        bars.forEach(function(el) {
+            var pct = parseInt(el.getAttribute('data-pct'), 10) || 0;
+            setTimeout(function() { el.style.width = pct + '%'; }, 150);
+        });
+    });
+</script>
+</body>
+</html>
